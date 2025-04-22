@@ -21,13 +21,22 @@ class Database():
     def __init__(self):
         self.conn = sq.connect("todo.db")
         self.cursor = self.conn.cursor()
+        self._create_table()
     def _create_table(self):
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS tasks (
-            id integer,
-            title text,
-            is_done boolean default 0
+            id integer primary key autoincrement,
+            title text not null,
+            description text,
+            is_done boolean default 0,
+            priority text check (priority in ('Нет','Низкий','Средний','Высокий'))
         )
         """)
         self.conn.commit()
+    def add_task(self, title, description='', priority='Нет'):
+        self.cursor.execute("""
+        INSERT INTO tasks VALUES (
+            
+        )
+        """)
 table1 = Database()
