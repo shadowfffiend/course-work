@@ -47,7 +47,6 @@ class Database():
 # table1.delete_task(5)
 
 
-
 # connection = sq.connect("todo.db")
 #
 # cur = connection.cursor()
