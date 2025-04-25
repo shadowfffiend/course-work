@@ -45,21 +45,3 @@ class Database():
 # table1.add_task("SD","SD", "Низкий")
 # table1.add_task('233', "SD", "Низкий")
 # table1.delete_task(5)
-
-
-# connection = sq.connect("todo.db")
-#
-# cur = connection.cursor()
-#
-# # cur.execute("""CREATE TABLE IF NOT EXISTS tasks (
-# #     id INTEGER,
-# #     title TEXT
-# # )
-# # """)
-# #
-# # cur.execute("INSERT INTO tasks VALUES (1, 'asda')")
-# cur.execute("SELECT rowid, id FROM tasks")
-# print(cur.fetchall())
-# connection.commit()
-#
-# connection.close()
