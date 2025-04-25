@@ -18,27 +18,26 @@ class ToDoApp():
 
         self.manager = TaskManager()
 
-        # Основные фреймы в правильном порядке
-
+        # основные фреймы
         self.input_frame = ttk.Frame(self.root, padding=10)
         self.input_frame.pack(fill=BOTH, expand=True)  # Верхняя часть - форма ввода
 
         self.filter_frame = ttk.Frame(self.root, padding=10)
-        self.filter_frame.pack(fill=X)  # Размещаем фильтр между формой ввода и таблицей
+        self.filter_frame.pack(fill=X, expand=True)  # размещаем фильтр между формой ввода и таблицей
 
         self.tree_frame = ttk.Frame(self.root)
-        self.tree_frame.pack(fill=BOTH, expand=True)  # Центр - таблица (занимает все свободное место)
+        self.tree_frame.pack(fill=BOTH, expand=True)  # центр - таблица
 
         self.button_frame = ttk.Frame(self.root, padding=10)
-        self.button_frame.pack(fill=BOTH, expand=True)  # Низ - кнопки управления
+        self.button_frame.pack(fill=BOTH, expand=True)  # низ - кнопки управления
 
         self.logo_text = Label(
             self.root,
-            text="TO DO\n✅APP",  # Текст в 3 строки
-            font=('Arial', 40, 'bold'),  # Шрифт как на скриншоте
-            fg='#333333',  # Цвет текста
-            justify=RIGHT,  # Выравнивание по правому краю
-            padx=50,  # Отступы
+            text="TO DO\n✅APP",
+            font=('Arial', 40, 'bold'),
+            fg='#333333',  # цвет
+            justify=RIGHT,  # выравнивание
+            padx=50,
             pady=5
         )
         self.logo_text2 = Label(
@@ -153,7 +152,6 @@ class ToDoApp():
         )
         self.delete_button.pack(side=LEFT, padx=5)
 
-        # Активация кнопок при выборе задачи
 
     def run(self):
         self.root.mainloop()
