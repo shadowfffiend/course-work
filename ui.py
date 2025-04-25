@@ -14,7 +14,6 @@ class ToDoApp():
         self.style = ttk.Style()
         self.style.theme_use('xpnative')
 
-
         self.manager = TaskManager()
 
         # основные фреймы
@@ -169,8 +168,7 @@ class ToDoApp():
         # Кнопки управления в нижнем фрейме
         self.done_button = ttk.Button(
             self.button_frame,
-            text="Отметить как выполненное",
-            # command=self._complete_task,
+            text="Отметить как выполненную",
             state=DISABLED
         )
         self.done_button.pack(side=LEFT, padx=5)
@@ -178,7 +176,6 @@ class ToDoApp():
         self.delete_button = ttk.Button(
             self.button_frame,
             text="Удалить",
-            # command=self._delete_task,
             state=DISABLED
         )
         self.delete_button.pack(side=LEFT, padx=5)
@@ -230,17 +227,26 @@ class ToDoApp():
             messagebox.showerror("Ошибка", str(e))
 
     def _complete_task(self):
-        """Отмечает задачу выполненной"""
+        """Переключает статус задачи между выполненной и невыполненной"""
         selected = self.task_tree.selection()
         if selected:
             task_id = self.task_tree.item(selected[0])['tags'][0]
-            self.manager.update_task_status(task_id, True)
+            # Получаем текущий статус задачи
+            current_status = self.task_tree.item(selected[0])['values'][4] == "Выполнена"
+            # Инвертируем статус
+            self.manager.update_task_status(task_id, not current_status)
             self._load_tasks()
 
     def _on_task_select(self, event):
-        """Активирует кнопки при выборе задачи"""
+        """Активирует кнопки при выборе задачи и меняет текст кнопки в зависимости от статуса"""
         if self.task_tree.selection():
-            self.done_button.config(state=NORMAL)
+            selected = self.task_tree.selection()[0]
+            current_status = self.task_tree.item(selected)['values'][4] == "Выполнена"
+            # Меняем текст кнопки в зависимости от статуса
+            self.done_button.config(
+                text="Отметить как невыполненную" if current_status else "Отметить как выполненную",
+                state=NORMAL
+            )
             self.delete_button.config(state=NORMAL)
         else:
             self.done_button.config(state=DISABLED)
@@ -258,13 +264,3 @@ class ToDoApp():
 
     def run(self):
         self.root.mainloop()
-
-
-from tkinter import Tk
-if __name__ == "__main__":
-    root = Tk()
-    app = ToDoApp(root)
-    try:
-        app.run()
-    finally:
-        app.manager.close()
