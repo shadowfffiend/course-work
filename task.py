@@ -9,19 +9,16 @@ class TaskManager():
         return self.db.add_task(title, description, priority, due_date)
 
     def get_all_tasks(self):
-        """Возвращает задачи в формате для Treeview"""
+        """Возвращает ВСЕ задачи в формате для Treeview"""
         db_tasks = self.db.get_all_tasks()
-        tasks = []
-        for task in db_tasks:
-            tasks.append({
-                "id": task[0],
-                "title": task[1],
-                "description": task[2],
-                "is_done": bool(task[3]),
-                "due_date": task[4],
-                "priority": task[5]
-            })
-        return tasks
+        return [{
+            "id": task[0],
+            "title": task[1],
+            "description": task[2],
+            "is_done": bool(task[3]),
+            "due_date": task[4],
+            "priority": task[5]
+        } for task in db_tasks]
 
     def delete_task(self, task_id):
         """Удаляет задачу по ID"""
@@ -34,3 +31,4 @@ class TaskManager():
     def close(self):
         """Закрывает соединение с БД"""
         self.db.close_db()
+

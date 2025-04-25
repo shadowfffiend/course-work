@@ -7,14 +7,13 @@ from tkcalendar import DateEntry
 class ToDoApp():
     def __init__(self, root):
         self.root = root
-        self.root.geometry("800x600")
-        self.root.minsize(700,600)
-        self.root.maxsize(1000, 1000)
-        self.root.title("To Do")
+
+        self._setup_window()
 
         # Стиль
         self.style = ttk.Style()
         self.style.theme_use('xpnative')
+
 
         self.manager = TaskManager()
 
@@ -54,7 +53,23 @@ class ToDoApp():
 
         self._create_widgets()
         self._create_tasks_tree()
+        self._load_tasks()
 
+    def _setup_window(self):  # main окно
+        self.root.title("To Do")
+        # Установка размеров окна
+        window_width = 800
+        window_height = 600
+
+        # Центрирование окна
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x = (screen_width // 2) - (window_width // 2)
+        y = (screen_height // 2) - (window_height // 2)
+
+        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        self.root.minsize(800, 600) #  self.root.minsize(700, 600)
+        self.root.maxsize(800, 600) #  self.root.maxsize(800, 700)
 
     def _create_widgets(self):
         """Создаем элементы формы ввода"""
@@ -72,9 +87,11 @@ class ToDoApp():
         ttk.Label(self.input_frame, text="Приоритет:").grid(row=2, column=0, sticky=W)
         self.priority = ttk.Combobox(self.input_frame,
                                      values=["Низкий", "Средний", "Высокий"],
-                                     width=15)
+                                     width=15,
+                                     state="readonly")
         self.priority.grid(row=2, column=1, padx=5, pady=5, sticky=EW)
         self.priority.current(1)  # Значение по умолчанию "Средний"
+
 
         # Срок выполнения
         ttk.Label(self.input_frame, text="Срок выполнения:").grid(row=3, column=0, sticky=W)
@@ -84,8 +101,18 @@ class ToDoApp():
                                   foreground='white',
                                   borderwidth=2,
                                   date_pattern="dd.mm.yyyy",
-                                  font=('Arial', 10))
+                                  font=('Arial', 10),
+                                  state="readonly",
+                                  )
         self.due_date.grid(row=3, column=1, padx=5, pady=5, sticky=EW)
+        # Кнопка очистки даты
+        self.clear_date_button = ttk.Button(
+            self.input_frame,
+            text="X",
+            width=2,
+            command=self._clear_due_date
+        )
+        self.clear_date_button.grid(row=3, column=2, sticky=W)
 
         # Кнопка добавления
         self.add_button = ttk.Button(
@@ -104,6 +131,10 @@ class ToDoApp():
         self.filter.pack(side=LEFT, padx=5, pady=5)
         self.filter.current(0)
 
+    def _clear_due_date(self):
+        """Полностью очищает поле даты"""
+        self.due_date._set_text('')
+        self.due_date._date = None
     def _create_tasks_tree(self):
         """Создаем таблицу задач"""
         self.task_tree = ttk.Treeview(
@@ -152,12 +183,88 @@ class ToDoApp():
         )
         self.delete_button.pack(side=LEFT, padx=5)
 
+        self.add_button.config(command=self._add_task)
+        self.done_button.config(command=self._complete_task)
+        self.delete_button.config(command=self._delete_task)
+
+        # Привязка выбора задачи
+        self.task_tree.bind("<<TreeviewSelect>>", self._on_task_select)
+
+    def _load_tasks(self):
+        for item in self.task_tree.get_children():
+            self.task_tree.delete(item)
+        tasks = self.manager.get_all_tasks()
+        for task in tasks:
+            status = "Выполнена" if task['is_done'] else "Не выполнена"
+            # Заменяем None на пустую строку для отображения
+            due_date = task['due_date'] if task['due_date'] else ""
+            self.task_tree.insert("", "end",
+                                  values=(task['title'],
+                                          task['description'],
+                                          due_date,  # Используем обработанное значение
+                                          task['priority'],
+                                          status),
+                                  tags=(task['id']))
+
+    def _add_task(self):
+        try:
+            title = self.entry_task.get()
+            description = self.description.get()
+            priority = self.priority.get()
+
+            # Проверяем, есть ли дата в поле
+            if self.due_date.get():
+                due_date = self.due_date.get_date().strftime("%d.%m.%Y")
+            else:
+                due_date = None  # или можно установить пустую строку ""
+
+            self.manager.add_task(title, description, priority, due_date)
+
+            # Очищаем поля
+            self.entry_task.delete(0, END)
+            self.description.delete(0, END)
+            self._load_tasks()
+
+        except Exception as e:
+            from tkinter import messagebox
+            messagebox.showerror("Ошибка", str(e))
+
+    def _complete_task(self):
+        """Отмечает задачу выполненной"""
+        selected = self.task_tree.selection()
+        if selected:
+            task_id = self.task_tree.item(selected[0])['tags'][0]
+            self.manager.update_task_status(task_id, True)
+            self._load_tasks()
+
+    def _on_task_select(self, event):
+        """Активирует кнопки при выборе задачи"""
+        if self.task_tree.selection():
+            self.done_button.config(state=NORMAL)
+            self.delete_button.config(state=NORMAL)
+        else:
+            self.done_button.config(state=DISABLED)
+            self.delete_button.config(state=DISABLED)
+
+    def _delete_task(self):
+        """Удаляет задачу с подтверждением"""
+        selected = self.task_tree.selection()
+        if selected:
+            task_id = self.task_tree.item(selected[0])['tags'][0]
+            from tkinter import messagebox
+            if messagebox.askyesno("Подтверждение", "Удалить выбранную задачу?"):
+                self.manager.delete_task(task_id)
+                self._load_tasks()
 
     def run(self):
         self.root.mainloop()
 
 
+from tkinter import Tk
 if __name__ == "__main__":
     root = Tk()
     app = ToDoApp(root)
-    app.run()
+    try:
+        app.run()
+    finally:
+        app.manager.close()

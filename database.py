@@ -39,9 +39,11 @@ class Database():
                     UPDATE tasks SET is_done = ? WHERE id = ?
                     """, (1 if is_done else 0, task_id))
         self.conn.commit()
+
     def close_db(self):
         self.conn.close()
 # table1 = Database()
 # table1.add_task("SD","SD", "Низкий")
 # table1.add_task('233', "SD", "Низкий")
 # table1.delete_task(5)
+
