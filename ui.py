@@ -70,6 +70,37 @@ class ToDoApp():
         self.root.minsize(800, 600) #  self.root.minsize(700, 600)
         self.root.maxsize(800, 600) #  self.root.maxsize(800, 700)
 
+    def _apply_filter(self, event=None):
+        """Применяет выбранный фильтр к списку задач"""
+        filter_value = self.filter.get()
+        tasks = self.manager.get_all_tasks()  # Получаем все задачи из БД
+
+        # Очищаем текущее отображение
+        for item in self.task_tree.get_children():
+            self.task_tree.delete(item)
+
+        # Фильтруем задачи в зависимости от выбранного значения
+        for task in tasks:
+            status = "Выполнена" if task['is_done'] else "Не выполнена"
+            due_date = task['due_date'] if task['due_date'] else ""
+
+            # Проверяем соответствие фильтру
+            show_task = True
+            if filter_value == "Выполненные" and not task['is_done']:
+                show_task = False
+            elif filter_value == "Невыполненные" and task['is_done']:
+                show_task = False
+            elif filter_value in ["Низкий", "Средний", "Высокий"] and task['priority'] != filter_value:
+                show_task = False
+
+            if show_task:
+                self.task_tree.insert("", "end",
+                                      values=(task['title'],
+                                              task['description'],
+                                              due_date,
+                                              task['priority'],
+                                              status),
+                                      tags=(task['id']))
     def _create_widgets(self):
         """Создаем элементы формы ввода"""
         # Новая задача
@@ -129,6 +160,8 @@ class ToDoApp():
                                    state="readonly")
         self.filter.pack(side=LEFT, padx=5, pady=5)
         self.filter.current(0)
+        # Добавляем обработчик изменения фильтра
+        self.filter.bind("<<ComboboxSelected>>", self._apply_filter)
 
     def _clear_due_date(self):
         """Полностью очищает поле даты"""
