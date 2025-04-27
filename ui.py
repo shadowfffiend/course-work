@@ -40,7 +40,7 @@ class ToDoApp():
         )
         self.logo_text2 = Label(
             self.root,
-            text="DERIN TECH",  # Текст в 3 строки
+            text="PRIME TECH",
             font=('Arial', 15, 'bold'),  # Шрифт как на скриншоте
             fg='#333333',  # Цвет текста
             justify=RIGHT,  # Выравнивание по правому краю
