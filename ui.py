@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter import ttk
-from task import TaskManager
 from tkcalendar import DateEntry
+from task import TaskManager
+
 
 class ToDoApp():
     def __init__(self, root):
@@ -48,11 +49,6 @@ class ToDoApp():
                        fieldbackground=[("readonly", "#EEF5FC")],
                        background=[("readonly", "#EEF5FC")])
 
-        # DateEntry (срок выполнения)
-        self.style.configure("DateEntry",
-                             foreground="#000814",
-                             font=('Arial', 13))
-
         self.style.configure("Vertical.TScrollbar",
                              troughcolor="#EEF5FC",
                              relief=RAISED)
@@ -64,9 +60,9 @@ class ToDoApp():
         self.input_frame.pack(fill=BOTH, expand=True)  # Верхняя часть - форма ввода
 
         self.filter_frame = ttk.Frame(self.root, padding=(10, 0))
-        self.filter_frame.pack(fill=X)  # размещаем фильтр между формой ввода и таблицей
+        self.filter_frame.pack(fill=BOTH, expand=True)  # размещаем фильтр между формой ввода и таблицей
 
-        self.tree_frame = ttk.Frame(self.root)
+        self.tree_frame = ttk.Frame(self.root, padding=(10, 1))
         self.tree_frame.pack(fill=BOTH, expand=True)  # центр - таблица
 
         self.button_frame = ttk.Frame(self.root, padding=(10, 5))
@@ -112,10 +108,9 @@ class ToDoApp():
                                      values=["Низкий", "Средний", "Высокий"],
                                      width=15,
                                      state="readonly",
-                                     font=('Arial', 13),
-                                     background="green")
+                                     font=('Arial', 13))
         self.priority.grid(row=2, column=1, padx=5, pady=5, sticky=EW)
-        self.priority.current(1)  # Значение по умолчанию "Средний"
+        self.priority.current(1)  # по умолчанию средний
 
         # Срок выполнения
         ttk.Label(self.input_frame, text="Срок выполнения:").grid(row=3, column=0, sticky=W)
@@ -125,8 +120,9 @@ class ToDoApp():
                                   date_pattern="dd.mm.yyyy",
                                   font=('Arial', 13),
                                   state="readonly",
-                                  style="DateEntry"  # Добавляем явное указание стиля
+                                  background="#163950"
                                   )
+
         self.due_date.grid(row=3, column=1, padx=5, pady=5, sticky=EW)
 
         # Кнопка очистки даты
