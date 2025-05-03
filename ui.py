@@ -3,7 +3,6 @@ from tkinter import ttk
 from tkcalendar import DateEntry
 from task import TaskManager
 
-
 class ToDoApp():
     def __init__(self, root):
         self.root = root
@@ -97,9 +96,19 @@ class ToDoApp():
         self.entry_task = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814")
         self.entry_task.grid(row=0, column=1, padx=5, pady=5)
 
+        def validate(new_value, max_length):
+            return len(new_value) <= max_length # возвращает тру фолс
+
+        validate_task = (self.root.register(lambda new_value: validate(new_value, 30)), "%P")
+        self.entry_task = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814",
+                                validate="key", validatecommand=validate_task)
+        self.entry_task.grid(row=0, column=1, padx=5, pady=5)
+
         # Описание
         ttk.Label(self.input_frame, text="Описание:").grid(row=1, column=0, sticky=W)
-        self.description = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814")
+        validate_description = (self.root.register(lambda new_value: validate(new_value, 30)), "%P")
+        self.description = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814",
+                                 validate="key", validatecommand=validate_description)
         self.description.grid(row=1, column=1, padx=5, pady=5)
 
         # Приоритет
@@ -221,10 +230,10 @@ class ToDoApp():
         self.task_tree.heading("status", text="Статус")
 
         # Настраиваем колонки
-        self.task_tree.column("title", width=200)
-        self.task_tree.column("description", width=250)
-        self.task_tree.column("due_date", width=100)
-        self.task_tree.column("priority", width=100)
+        self.task_tree.column("title", width=235)
+        self.task_tree.column("description", width=255)
+        self.task_tree.column("due_date", width=85)
+        self.task_tree.column("priority", width=90)
         self.task_tree.column("status", width=100)
 
         # Добавляем прокрутку
