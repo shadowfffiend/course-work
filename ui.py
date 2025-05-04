@@ -69,7 +69,7 @@ class ToDoApp():
 
         self.logo_text = Label(
             self.root,
-            text="TO DO\n✅APP",
+            text="To Do\n✅App",
             font=('Arial', 40, 'bold'),
             bg='#CADFF6',
             fg='#0d1b2a',  # цвет
@@ -79,8 +79,8 @@ class ToDoApp():
         )
         self.logo_text2 = Label(
             self.root,
-            text="PRIME TECH",
-            font=('Arial', 15, 'bold'),  # Шрифт как на скриншоте
+            text="Lite",
+            font=('Arial', 20, 'bold'),  # Шрифт как на скриншоте
             bg='#CADFF6',
             fg='#0d1b2a',  # Цвет текста
             justify=RIGHT,  # Выравнивание по правому краю
@@ -88,7 +88,7 @@ class ToDoApp():
             pady=5
         )
         self.logo_text.place(relx=1.0, rely=0.0, anchor=NE, x=-10, y=10)
-        self.logo_text2.place(relx=1.0, rely=0.0, anchor=NE, x=-10, y=150)
+        self.logo_text2.place(relx=1.0, rely=0.0, anchor=NE, x=-25, y=140)
 
         """Создаем элементы формы ввода"""
         # Новая задача
@@ -147,6 +147,7 @@ class ToDoApp():
         self.add_button = ttk.Button(
             self.input_frame,
             text="Добавить",
+            command=self._add_task
         )
         self.add_button.grid(row=4, column=0, pady=10, sticky=NSEW, columnspan=2)
 
@@ -245,23 +246,29 @@ class ToDoApp():
         scrollbar.pack(side=RIGHT, fill=Y, ipadx=5)
 
         # Кнопки управления в нижнем фрейме
+        self.edit_button = ttk.Button(
+            self.button_frame,
+            text="Редактировать",
+            state=DISABLED,
+            # command=self._edit_task
+        )
+        self.edit_button.pack(side=LEFT, padx=5)
+
         self.done_button = ttk.Button(
             self.button_frame,
             text="Отметить как выполненную",
-            state=DISABLED
+            state=DISABLED,
+            command=self._complete_task
         )
         self.done_button.pack(side=LEFT, padx=5)
 
         self.delete_button = ttk.Button(
             self.button_frame,
             text="Удалить",
-            state=DISABLED
+            state=DISABLED,
+            command=self._delete_task
         )
         self.delete_button.pack(side=LEFT, padx=5)
-
-        self.add_button.config(command=self._add_task) # связываем кнопку add_button с функцией _add_task и аналогично для др
-        self.done_button.config(command=self._complete_task)
-        self.delete_button.config(command=self._delete_task)
 
         # Привязка выбора задачи
         self.task_tree.bind("<<TreeviewSelect>>", self._on_task_select)
@@ -304,15 +311,26 @@ class ToDoApp():
         except Exception as e:
             from tkinter import messagebox
             messagebox.showerror("Ошибка", str(e))
+    def _edit_task(self):
+        selected = self.task_tree.selection()
+        task_id = self.task_tree.item(selected[0])['tags'][0]
 
     def _complete_task(self):
         """Переключает статус задачи между выполненной и невыполненной"""
         selected = self.task_tree.selection()  # возвращает id выбранной строки в таблице
-        if selected:  # Проверяем, выбрана ли задача
-            task_id = self.task_tree.item(selected[0])['tags'][0]  # Извлекаем уникальный ID задачи из тега выбранной строки
-            current_status = self.task_tree.item(selected[0])['values'][4] == "Выполнена"  # Проверяем, выполнена ли задача (статус в столбце 'status')
-            self.manager.update_task_status(task_id, not current_status)  # Инвертируем статус (если выполнена, ставим невыполненную и наоборот)
-            self._load_tasks()  # Обновляем отображение задач в таблице
+        task_id = self.task_tree.item(selected[0])['tags'][0]  # Извлекаем уникальный ID задачи из тега выбранной строки
+        current_status = self.task_tree.item(selected[0])['values'][4] == "Выполнена"  # Проверяем, выполнена ли задача (статус в столбце 'status')
+        self.manager.update_task_status(task_id, not current_status)  # Инвертируем статус (если выполнена, ставим невыполненную и наоборот)
+        self._load_tasks()  # Обновляем отображение задач в таблице
+
+    def _delete_task(self):
+        """Удаляет задачу с подтверждением"""
+        selected = self.task_tree.selection()
+        task_id = self.task_tree.item(selected[0])['tags'][0]
+        from tkinter import messagebox
+        if messagebox.askyesno("Подтверждение", "Удалить выбранную задачу?"):
+            self.manager.delete_task(task_id)
+            self._load_tasks()
 
     def _on_task_select(self, event):
         """Активирует кнопки при выборе задачи и меняет текст кнопки в зависимости от статуса"""
@@ -328,16 +346,6 @@ class ToDoApp():
         else:
             self.done_button.config(state=DISABLED)
             self.delete_button.config(state=DISABLED)
-
-    def _delete_task(self):
-        """Удаляет задачу с подтверждением"""
-        selected = self.task_tree.selection()
-        if selected:
-            task_id = self.task_tree.item(selected[0])['tags'][0]
-            from tkinter import messagebox
-            if messagebox.askyesno("Подтверждение", "Удалить выбранную задачу?"):
-                self.manager.delete_task(task_id)
-                self._load_tasks()
 
     def run(self):
         self.root.mainloop()
