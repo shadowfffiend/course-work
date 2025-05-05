@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkcalendar import DateEntry
 from task import TaskManager
 
-class ToDoApp():
+class ToDoApp:
     def __init__(self, root):
         self.root = root
         self.manager = TaskManager()
@@ -54,9 +54,11 @@ class ToDoApp():
 
         self.style.map("Vertical.TScrollbar", background=[('active', '#CADFF6'), ('!active', '#CADFF6')])
 
+        self.style.configure("Save.TButton",
+                             background="#497753")
     def _create_widgets(self):
         self.input_frame = ttk.Frame(self.root, padding=(10, 5))
-        self.input_frame.pack(fill=BOTH, expand=True)  # Верхняя часть - форма ввода
+        self.input_frame.pack(fill=BOTH, expand=True)  # верхняя часть - форма ввода
 
         self.filter_frame = ttk.Frame(self.root, padding=(10, 0))
         self.filter_frame.pack(fill=BOTH, expand=True)  # размещаем фильтр между формой ввода и таблицей
@@ -80,18 +82,17 @@ class ToDoApp():
         self.logo_text2 = Label(
             self.root,
             text="Lite",
-            font=('Arial', 20, 'bold'),  # Шрифт как на скриншоте
+            font=('Arial', 20, 'bold'),
             bg='#CADFF6',
-            fg='#0d1b2a',  # Цвет текста
-            justify=RIGHT,  # Выравнивание по правому краю
-            padx=50,  # Отступы
+            fg='#0d1b2a',
+            justify=RIGHT,
+            padx=50,
             pady=5
         )
         self.logo_text.place(relx=1.0, rely=0.0, anchor=NE, x=-10, y=10)
         self.logo_text2.place(relx=1.0, rely=0.0, anchor=NE, x=-25, y=140)
 
-        """Создаем элементы формы ввода"""
-        # Новая задача
+        # элементы формы ввода
         ttk.Label(self.input_frame, text="Новая задача:").grid(row=0, column=0, sticky=W)
         self.entry_task = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814")
         self.entry_task.grid(row=0, column=1, padx=5, pady=5)
@@ -104,14 +105,14 @@ class ToDoApp():
                                 validate="key", validatecommand=validate_task)
         self.entry_task.grid(row=0, column=1, padx=5, pady=5)
 
-        # Описание
+        # описание
         ttk.Label(self.input_frame, text="Описание:").grid(row=1, column=0, sticky=W)
         validate_description = (self.root.register(lambda new_value: validate(new_value, 30)), "%P")
         self.description = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814",
                                  validate="key", validatecommand=validate_description)
         self.description.grid(row=1, column=1, padx=5, pady=5)
 
-        # Приоритет
+        # приоритет
         ttk.Label(self.input_frame, text="Приоритет:").grid(row=2, column=0, sticky=W)
         self.priority = ttk.Combobox(self.input_frame,
                                      values=["Низкий", "Средний", "Высокий"],
@@ -121,7 +122,7 @@ class ToDoApp():
         self.priority.grid(row=2, column=1, padx=5, pady=5, sticky=EW)
         self.priority.current(1)  # по умолчанию средний
 
-        # Срок выполнения
+        # срок выполнения
         ttk.Label(self.input_frame, text="Срок выполнения:").grid(row=3, column=0, sticky=W)
         self.due_date = DateEntry(self.input_frame,
                                   width=15,
@@ -134,7 +135,7 @@ class ToDoApp():
 
         self.due_date.grid(row=3, column=1, padx=5, pady=5, sticky=EW)
 
-        # Кнопка очистки даты
+        # кнопка очистки даты
         self.clear_date_button = ttk.Button(
             self.input_frame,
             text="X",
@@ -143,7 +144,7 @@ class ToDoApp():
         )
         self.clear_date_button.grid(row=3, column=2, sticky=W)
 
-        # Кнопка добавления
+        # кнопка добавления
         self.add_button = ttk.Button(
             self.input_frame,
             text="Добавить",
@@ -151,7 +152,7 @@ class ToDoApp():
         )
         self.add_button.grid(row=4, column=0, pady=10, sticky=NSEW, columnspan=2)
 
-        # Фильтр
+        # фильтр
         ttk.Label(self.filter_frame, text="Фильтр:").pack(side=LEFT, padx=5, pady=5)
         self.filter = ttk.Combobox(self.filter_frame,
                                    values=["Все", "Выполненные", "Невыполненные", "Низкий", "Средний", "Высокий"],
@@ -162,8 +163,7 @@ class ToDoApp():
         self.filter.current(0)
         self.filter.bind("<<ComboboxSelected>>", self._apply_filter) # привязывает обработчик события выбора нового значения в фильтре
 
-    def _clear_due_date(self):
-        """Полностью очищает поле даты"""
+    def _clear_due_date(self): # очищаем поле даты
         self.due_date._set_text('')
         self.due_date._date = None
 
@@ -172,31 +172,29 @@ class ToDoApp():
         window_width = 900
         window_height = 700
 
-        # Центрирование окна
+        # центрирование окна
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         x = (screen_width // 2) - (window_width // 2)
         y = (screen_height // 2) - (window_height // 2)
 
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-        self.root.minsize(850, 600) #  self.root.minsize(700, 600)
-        # self.root.maxsize(800, 600) #  self.root.maxsize(800, 700)
+        self.root.minsize(850, 600)
 
-    def _apply_filter(self, event=None):
-        """Применяет выбранный фильтр к списку задач"""
+    def _apply_filter(self, event=None): # применяем выбранный фильтр к списку задач
         filter_value = self.filter.get()
-        tasks = self.manager.get_all_tasks()  # Получаем все задачи из БД
+        tasks = self.manager.get_all_tasks()  # получаем все задачи из БД
 
-        # Очищаем текущее отображение, чтобы потом заново отобразить только те, что подходят под фильтр.
+        # очищаем текущее отображение, чтобы потом заново отобразить только те, что подходят под фильтр
         for item in self.task_tree.get_children():
             self.task_tree.delete(item)
 
-        # Фильтруем задачи в зависимости от выбранного значения
+        # фильтруем задачи в зависимости от выбранного значения
         for task in tasks:
             status = "Выполнена" if task['is_done'] else "Не выполнена"
             due_date = task['due_date'] if task['due_date'] else ""
 
-            # Проверяем соответствие фильтру
+            # проверяем соответствие фильтру
             show_task = True
             if filter_value == "Выполненные" and not task['is_done']:
                 show_task = False
@@ -214,8 +212,7 @@ class ToDoApp():
                                               status),
                                       tags=(task['id']))
 
-    def _create_tasks_tree(self):
-        """Создаем таблицу задач"""
+    def _create_tasks_tree(self): # создаем таблицу задач
         self.task_tree = ttk.Treeview(
             self.tree_frame,
             columns=("title", "description", "due_date", "priority", "status"),
@@ -223,34 +220,34 @@ class ToDoApp():
             selectmode="browse"
         )
 
-        # Настраиваем заголовки
+        # настраиваем заголовки
         self.task_tree.heading("title", text="Задача")
         self.task_tree.heading("description", text="Описание")
         self.task_tree.heading("due_date", text="Срок")
         self.task_tree.heading("priority", text="Приоритет")
         self.task_tree.heading("status", text="Статус")
 
-        # Настраиваем колонки
+        # настраиваем колонки
         self.task_tree.column("title", width=235)
         self.task_tree.column("description", width=255)
         self.task_tree.column("due_date", width=85)
         self.task_tree.column("priority", width=90)
         self.task_tree.column("status", width=100)
 
-        # Добавляем прокрутку
+        # размещаем таблицу
+        self.task_tree.pack(side=LEFT, fill=BOTH, expand=True, padx=10)
+
+        # прокрутка
         scrollbar = ttk.Scrollbar(self.tree_frame, orient=VERTICAL, command=self.task_tree.yview)
         self.task_tree.configure(yscrollcommand=scrollbar.set) # связываем вертикальную прокрутку в task_tree с поведением скроллбара
-
-        # Размещаем таблицу и скроллбар
-        self.task_tree.pack(side=LEFT, fill=BOTH, expand=True, padx=10)
         scrollbar.pack(side=RIGHT, fill=Y, ipadx=5)
 
-        # Кнопки управления в нижнем фрейме
+        # кнопки управления в нижнем фрейме
         self.edit_button = ttk.Button(
             self.button_frame,
             text="Редактировать",
             state=DISABLED,
-            # command=self._edit_task
+            command=self._edit_task
         )
         self.edit_button.pack(side=LEFT, padx=5)
 
@@ -270,7 +267,7 @@ class ToDoApp():
         )
         self.delete_button.pack(side=LEFT, padx=5)
 
-        # Привязка выбора задачи
+        # привязка выбора задачи
         self.task_tree.bind("<<TreeviewSelect>>", self._on_task_select)
 
     def _load_tasks(self):
@@ -283,7 +280,7 @@ class ToDoApp():
             self.task_tree.insert("", "end",
                                   values=(task['title'],
                                           task['description'],
-                                          due_date,  # Используем обработанное значение
+                                          due_date,  # используем обработанное значение
                                           task['priority'],
                                           status),
                                   tags=(task['id']))
@@ -311,20 +308,62 @@ class ToDoApp():
         except Exception as e:
             from tkinter import messagebox
             messagebox.showerror("Ошибка", str(e))
-    def _edit_task(self):
-        selected = self.task_tree.selection()
-        task_id = self.task_tree.item(selected[0])['tags'][0]
 
-    def _complete_task(self):
-        """Переключает статус задачи между выполненной и невыполненной"""
+    def _edit_task(self): # основное редактирование задачи
+        selected_item = self.task_tree.selection()[0]
+        task_id = self.task_tree.item(selected_item)['tags'][0]
+
+        task_data = None # поиск задачи по айди (первое совпадение)
+        for task in self.manager.get_all_tasks():
+            if task['id'] == task_id:
+                task_data = task
+                break
+
+        # подставляем данные в форму
+        self.entry_task.delete(0, END)
+        self.entry_task.insert(0, task_data['title'])
+
+        self.description.delete(0, END)
+        self.description.insert(0, task_data['description'])
+
+        self.priority.set(task_data['priority'])
+
+        if task_data['due_date']:
+            day, month, year = map(int, task_data['due_date'].split('.'))
+            self.due_date.set_date(f"{day:02d}-{month:02d}-{year}")
+
+        # меняем кнопку Добавить на Сохранить изм
+        self.add_button.config(
+            text="Сохранить изменения",
+            command=lambda: self._save_edited_task(task_id),
+            style="Save.TButton"
+        )
+
+    def _save_edited_task(self, task_id): # сохраняем отредактированную задачу
+        title = self.entry_task.get()
+        description = self.description.get()
+        priority = self.priority.get()
+        due_date = self.due_date.get_date().strftime("%d.%m.%Y") if self.due_date.get() else None
+        self.manager.update_full_task(task_id, title, description, priority, due_date)
+
+        self._reset_form()
+
+    def _reset_form(self): # сброс формы в исходное состояние
+        self.entry_task.delete(0, END)
+        self.description.delete(0, END)
+        self.priority.current(1)
+        self._clear_due_date()
+        self.add_button.config(text="Добавить", command=self._add_task, style="TButton") # возвращаем исходное сост
+        self._load_tasks()
+
+    def _complete_task(self): # переключаем статус: выполненна и невыполненна
         selected = self.task_tree.selection()  # возвращает id выбранной строки в таблице
-        task_id = self.task_tree.item(selected[0])['tags'][0]  # Извлекаем уникальный ID задачи из тега выбранной строки
-        current_status = self.task_tree.item(selected[0])['values'][4] == "Выполнена"  # Проверяем, выполнена ли задача (статус в столбце 'status')
-        self.manager.update_task_status(task_id, not current_status)  # Инвертируем статус (если выполнена, ставим невыполненную и наоборот)
-        self._load_tasks()  # Обновляем отображение задач в таблице
+        task_id = self.task_tree.item(selected[0])['tags'][0]  # извлекае id задачи из тега выбранной строки
+        current_status = self.task_tree.item(selected[0])['values'][4] == "Выполнена"  # проверяем, выполнена ли задача
+        self.manager.update_task_status(task_id, not current_status)  # инвертируем статус
+        self._load_tasks()
 
-    def _delete_task(self):
-        """Удаляет задачу с подтверждением"""
+    def _delete_task(self): # удаление задачи с подтверждением
         selected = self.task_tree.selection()
         task_id = self.task_tree.item(selected[0])['tags'][0]
         from tkinter import messagebox
@@ -332,30 +371,21 @@ class ToDoApp():
             self.manager.delete_task(task_id)
             self._load_tasks()
 
-    def _on_task_select(self, event):
-        """Активирует кнопки при выборе задачи и меняет текст кнопки в зависимости от статуса"""
+    def _on_task_select(self, event): # активация кнопки при выборе задачи и смена текста кнопки от статуса выполнения
         if self.task_tree.selection():
             selected = self.task_tree.selection()[0]
             current_status = self.task_tree.item(selected)['values'][4] == "Выполнена"
-            # Меняем текст кнопки в зависимости от статуса
+            # меняем текст кнопки в зависимости от статуса
             self.done_button.config(
                 text="Отметить как невыполненную" if current_status else "Отметить как выполненную",
                 state=NORMAL
             )
             self.delete_button.config(state=NORMAL)
+            self.edit_button.config(state=NORMAL)
         else:
             self.done_button.config(state=DISABLED)
             self.delete_button.config(state=DISABLED)
+            self.edit_button.config(state=DISABLED)
 
     def run(self):
         self.root.mainloop()
-
-from tkinter import Tk
-
-if __name__ == "__main__":
-    root = Tk()
-    app = ToDoApp(root)
-    try:
-        app.run()
-    finally:
-        app.manager.close()

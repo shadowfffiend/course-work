@@ -40,6 +40,14 @@ class Database():
                     """, (1 if is_done else 0, task_id))
         self.conn.commit()
 
+    def update_full_task(self, task_id, title, description, priority, due_date):
+        self.cursor.execute("""
+            UPDATE tasks 
+            SET title=?, description=?, priority=?, due_date=?
+            WHERE id=?
+        """, (title, description, priority, due_date, task_id))
+        self.conn.commit()
+
     def close_db(self):
         self.conn.close()
 # table1 = Database()
