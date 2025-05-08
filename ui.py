@@ -100,14 +100,14 @@ class ToDoApp:
         def validate(new_value, max_length):
             return len(new_value) <= max_length # возвращает тру фолс
 
-        validate_task = (self.root.register(lambda new_value: validate(new_value, 30)), "%P")
+        validate_task = (self.root.register(lambda new_value: validate(new_value, 70)), "%P")
         self.entry_task = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814",
                                 validate="key", validatecommand=validate_task)
         self.entry_task.grid(row=0, column=1, padx=5, pady=5)
 
         # описание
         ttk.Label(self.input_frame, text="Описание:").grid(row=1, column=0, sticky=W)
-        validate_description = (self.root.register(lambda new_value: validate(new_value, 30)), "%P")
+        validate_description = (self.root.register(lambda new_value: validate(new_value, 70)), "%P")
         self.description = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814",
                                  validate="key", validatecommand=validate_description)
         self.description.grid(row=1, column=1, padx=5, pady=5)
@@ -338,15 +338,21 @@ class ToDoApp:
             command=lambda: self._save_edited_task(task_id),
             style="Save.TButton"
         )
+        self.delete_button.config(state=DISABLED)
+        self.done_button.config(state=DISABLED)
+        self.edit_button.config(state=DISABLED)
 
     def _save_edited_task(self, task_id): # сохраняем отредактированную задачу
         title = self.entry_task.get()
         description = self.description.get()
         priority = self.priority.get()
         due_date = self.due_date.get_date().strftime("%d.%m.%Y") if self.due_date.get() else None
-        self.manager.update_full_task(task_id, title, description, priority, due_date)
-
-        self._reset_form()
+        try:
+            self.manager.update_full_task(task_id, title, description, priority, due_date)
+            self._reset_form()
+        except Exception as e:
+            from tkinter import messagebox
+            messagebox.showerror("Ошибка", str(e))
 
     def _reset_form(self): # сброс формы в исходное состояние
         self.entry_task.delete(0, END)
