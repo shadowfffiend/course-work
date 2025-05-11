@@ -54,4 +54,3 @@ class Database():
 # table1.add_task("SD","SD", "Низкий")
 # table1.add_task('233', "SD", "Низкий")
 # table1.delete_task(5)
-

@@ -100,14 +100,14 @@ class ToDoApp:
         def validate(new_value, max_length):
             return len(new_value) <= max_length # возвращает тру фолс
 
-        validate_task = (self.root.register(lambda new_value: validate(new_value, 70)), "%P")
+        validate_task = (self.root.register(lambda new_value: validate(new_value, 110)), "%P")
         self.entry_task = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814",
                                 validate="key", validatecommand=validate_task)
         self.entry_task.grid(row=0, column=1, padx=5, pady=5)
 
         # описание
         ttk.Label(self.input_frame, text="Описание:").grid(row=1, column=0, sticky=W)
-        validate_description = (self.root.register(lambda new_value: validate(new_value, 70)), "%P")
+        validate_description = (self.root.register(lambda new_value: validate(new_value, 110)), "%P")
         self.description = Entry(self.input_frame, width=40, font=('Arial', 13), bg="#EEF5FC", fg="#000814",
                                  validate="key", validatecommand=validate_description)
         self.description.grid(row=1, column=1, padx=5, pady=5)
@@ -168,7 +168,7 @@ class ToDoApp:
         self.due_date._date = None
 
     def _setup_window(self):  # main окно
-        self.root.title("To Do app")
+        self.root.title("To Do App Lite")
         window_width = 900
         window_height = 700
 
